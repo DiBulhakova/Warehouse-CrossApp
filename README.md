@@ -1,10 +1,10 @@
 # CrossApp
-Наскрізний проєкт з крос-платформного програмування.
-Предметна область: Склад. Сутності: Product, StockBatch, Warehouse, Movement.
+Наскрізний проєкт з крос-платформного програмування.<br>
+Предметна область: Склад. Сутності: Product, StockBatch, Warehouse, Movement.<br>
 Призначення: облік залишків товарів по партіях.
 
 ## Запуск
-dotnet build
+dotnet build <br>
 dotnet run --project src/Cli
 
 ## Середовище
