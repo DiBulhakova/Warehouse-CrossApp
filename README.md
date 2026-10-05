@@ -19,3 +19,21 @@ dotnet run --project src/Cli
 
 Розмір близький для обох RID, оскільки self-contained публікація завжди
 включає копію .NET runtime разом із застосунком.
+
+## Структура solution
+CrossApp/<br>
+  src/<br>
+    Core/   — бібліотека: збір інформації про середовище<br>
+    Cli/    — консольний клієнт, форматує вивід
+
+## Команди
+dotnet build<br>
+dotnet run --project src/Cli<br>
+dotnet publish src/Cli -c Release -r osx-x64 --self-contained true
+
+## Порівняння публікації
+
+| RID      | Режим               | Розмір publish | Потрібен runtime |
+|----------|---------------------|----------------|-------------------|
+| osx-x64  | self-contained      | ~70 МБ         | ні                |
+| osx-x64  | framework-dependent | ~0.2 МБ        | так (.NET 10)     |
