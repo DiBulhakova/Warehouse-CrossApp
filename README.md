@@ -37,3 +37,18 @@ dotnet publish src/Cli -c Release -r osx-x64 --self-contained true
 |----------|---------------------|----------------|-------------------|
 | osx-x64  | self-contained      | ~70 МБ         | ні                |
 | osx-x64  | framework-dependent | ~0.2 МБ        | так (.NET 10)     |
+
+## Multi-targeting
+
+Проєкти Core і Cli зібрані під два TFM: net8.0 та net10.0<br>
+(`<TargetFrameworks>net8.0;net10.0</TargetFrameworks>`).<br>
+Компіляція під обидва TFM проходить успішно.<br><br>
+
+Запуск Cli під net8.0 неможливий: на машині встановлено лише .NET 10 Runtime (10.0.12),<br>
+а запуск net8.0-застосунку вимагає окремо встановленого .NET 8 Runtime, якого немає.<br>
+SDK 10.0.401 дозволяє компілювати код під різні TFM, але не гарантує можливості його<br>
+запуску — для цього потрібен відповідний Runtime на цільовій машині.<br><br>
+
+Це демонструє принцип: SDK створює застосунок, Runtime його виконує.<br><br>
+
+Запуск: `dotnet run --project src/Cli -f net10.0`

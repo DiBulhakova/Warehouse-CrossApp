@@ -11,3 +11,4 @@ Console.WriteLine($"RID (визначено): {report.DetectedRid}");
 Console.WriteLine($"RID (від .NET) : {report.ReportedRid}");
 Console.WriteLine($"Каталог        : {report.BaseDirectory}");
 Console.WriteLine($"Предметна область: Склад (товари, партії, залишки, переміщення)");
+Console.WriteLine($"Примітка збірки : {report.BuildNote}");
