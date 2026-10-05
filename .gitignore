@@ -482,3 +482,5 @@ $RECYCLE.BIN/
 *.swp
 publish-sc/
 publish-fd/
+publish-trimmed/
+publish-singlefile/
