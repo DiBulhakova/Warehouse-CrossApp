@@ -26,3 +26,20 @@ static void TryDo(string title, Action action)
         Console.WriteLine($" {title}: {ex.GetType().Name} — {ex.Message}");
     }
 }
+var (products, errors) = ProductDomainImporter.LoadValidated("data/sample.csv");
+Console.WriteLine($"Валідних товарів: {products.Count}, помилок: {errors.Count}");
+
+Console.WriteLine();
+Console.WriteLine(" Додаткове завдання ");
+
+var (validProducts, importErrors) = ProductDomainImporter.LoadValidated("data/sample.csv");
+Console.WriteLine($"Валідних товарів з файлу: {validProducts.Count}, помилок: {importErrors.Count}");
+
+Warehouse mainWarehouse = Warehouse.Create("W-001", "Головний склад");
+mainWarehouse.Close();
+TryDo("прихід на закритий склад", () => StockOperations.RegisterArrival(product, mainWarehouse, 10));
+
+Movement movement = Movement.Create("M-001", "SKU-001", 20);
+movement.TransitionTo(MovementStatus.Confirmed);
+Console.WriteLine($"Переміщення {movement.Id}: {movement.Status}");
+TryDo("повторне підтвердження", () => movement.TransitionTo(MovementStatus.Confirmed));

@@ -49,6 +49,27 @@ dotnet publish src/Cli -c Release -r osx-x64 --self-contained true
 SDK 10.0.401 дозволяє компілювати код під різні TFM, але не гарантує можливості його<br>
 запуску — для цього потрібен відповідний Runtime на цільовій машині.<br><br>
 
-Це демонструє принцип: SDK створює застосунок, Runtime його виконує.<br><br>
+Це демонструє принцип: SDK створює застосунок, Runtime його виконує.<br>
+
+## Доменні інваріанти (лабораторна 4)
+
+### Product
+- Id, Sku, Name — не порожні (ArgumentException)
+- Quantity — не від'ємна при створенні (ArgumentOutOfRangeException)
+- RegisterArrival/Issue — amount > 0 (ArgumentOutOfRangeException)
+- Issue — не можна видати більше, ніж є на залишку (InvalidOperationException)
+
+### Warehouse
+- Id, Name — не порожні (ArgumentException)
+
+### Movement
+- Id — не порожній (ArgumentException)
+- Amount > 0 (ArgumentOutOfRangeException)
+- Перехід статусу лише за дозволеною матрицею: Draft → Confirmed / Cancelled (InvalidOperationException)
+
+### Міжсутнісний інваріант (додаткове завдання)
+- Неможливо зареєструвати прихід товару на закритий склад (StockOperations.RegisterArrival),<br>
+  правило винесене в окремий клас-сервіс, а не в Product чи Warehouse<br><br>
 
 Запуск: `dotnet run --project src/Cli -f net10.0`
+
