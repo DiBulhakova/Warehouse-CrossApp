@@ -4,8 +4,10 @@
 Призначення: облік залишків товарів по партіях.
 
 ## Запуск
-dotnet build <br>
+```bash
+dotnet build 
 dotnet run --project src/Cli
+```
 
 ## Середовище
 .NET SDK 10.0.100, macOS 15.6.1 (Sequoia), Intel x64 (osx-x64)
@@ -27,9 +29,11 @@ CrossApp/<br>
     Cli/    — консольний клієнт, форматує вивід
 
 ## Команди
-dotnet build<br>
-dotnet run --project src/Cli<br>
+```bash
+dotnet build
+dotnet run --project src/Cli
 dotnet publish src/Cli -c Release -r osx-x64 --self-contained true
+```
 
 ## Порівняння публікації
 
@@ -73,3 +77,35 @@ SDK 10.0.401 дозволяє компілювати код під різні TF
 
 Запуск: `dotnet run --project src/Cli -f net10.0`
 
+## Лабораторна 5: сервісний шар, два сховища, ручний DI
+
+Домен: Склад. Головна сутність: `Product` (лаб. 4).
+
+### Архітектура
+- Інтерфейс сховища: `ICatalogStore` (`src/Core/Abstractions/ICatalogStore.cs`) із методами `List`, `GetById`, `Add`, `Update`, `Remove`.
+- Реалізації:
+  - `InMemoryCatalogStore`: `Dictionary` у пам'яті, початкові дані з `SampleData` (16 записів), після виходу дані зникають.
+  - `FileCatalogStore`: JSON-файл `data/catalog.json`, кеш у пам'яті, завантаження при першому зверненні, запис на диск після кожної зміни. <br>
+На диск іде `ProductDto`, мапінг через `Product.ToDto/FromDto`.
+  - `CachingCatalogStore`: декоратор над будь-яким `ICatalogStore`, кешує `List()` і скидає кеш при змінах (додаткове завдання).
+- Сервіс: `CatalogService` (`src/Core/Services/CatalogService.cs`) із операціями `Add`, `Receive`, `Issue`, `All`, `Find`, `Search(Func<Product,bool>)`. <br>
+Залежить лише від `ICatalogStore`, залежність передається через конструктор.
+- Composition root: `src/Cli/Program.cs`. Тут єдине місце, де створюються конкретні класи сховищ. Альтернативний варіант: `src/Cli/StoreFactory.cs`.
+- DI-контейнер (`Microsoft.Extensions.DependencyInjection`) не використовується, залежності вручну через `new`. Контейнер з'явиться на тижні 10.<br><br>
+
+Схема залежностей: `Cli → CatalogService → ICatalogStore → InMemoryCatalogStore | FileCatalogStore`.
+
+### Запуск
+```bash
+dotnet run --project src/Cli -f net10.0                    # сховище в пам'яті 
+dotnet run --project src/Cli -f net10.0 -- --file          # файлове сховище
+dotnet run --project src/Cli -f net10.0 -- --cache         # з декоратором кешу
+dotnet run --project src/Cli -f net10.0 -- --file --cache  # файл + кеш
+```
+
+Файл даних створюється за шляхом `src/Cli/bin/Debug/net10.0/data/catalog.json`. Повторні запуски з `--file` накопичують записи.
+
+### Самоперевірка
+- `FileCatalogStore` згадується в `src/Core` лише у власному файлі.
+- `Console.` у `src/Core` відсутній.
+- Конструктор `CatalogService` приймає `ICatalogStore`, а не клас.
