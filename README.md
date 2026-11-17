@@ -109,3 +109,11 @@ dotnet run --project src/Cli -f net10.0 -- --file --cache  # файл + кеш
 - `FileCatalogStore` згадується в `src/Core` лише у власному файлі.
 - `Console.` у `src/Core` відсутній.
 - Конструктор `CatalogService` приймає `ICatalogStore`, а не клас.
+
+## Лабораторна 6: доменні події
+CatalogService піднімає подію Changed (EventHandler<CatalogChangedEventArgs>) після кожної
+успішної зміни: Added, Received, Issued, Removed. Core не пише в консоль і у файли.
+Cli підписує два обробники: локальний метод OnCatalogChanged (консоль + logs/app.log)
+і лямбду-лічильник. Показано відписку через -=.
+Пошук за довільним критерієм: FindAll(Func<Product, bool>).
+Запуск: dotnet run --project src/Cli
