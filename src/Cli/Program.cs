@@ -3,6 +3,7 @@ using Core.Abstractions;
 using Core.Events;
 using Core.Services;
 using Core.Storage;
+using Core.Import;
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -17,7 +18,8 @@ ICatalogStore store = useFile
 if (useCache)
     store = new CachingCatalogStore(store, Console.WriteLine);
 
-var service = new CatalogService(store);
+INotificationSink? sink = args.Contains("--sink") ? new ConsoleSink() : null;
+var service = new CatalogService(store, sink);
 Console.WriteLine($"Сховище: {store.GetType().Name}");
 Console.WriteLine();
 
@@ -75,6 +77,19 @@ foreach (var p in low)
 
 Console.WriteLine();
 Console.WriteLine($"Лог: {logPath}");
+
+Console.WriteLine();
+Console.WriteLine(" Імпорт CSV з Action<string> ");
+var csvPath = "data/sample.csv";   // шлях такий самий, як у лаб. 3
+int skippedCount = 0;
+
+var imported = ProductCsvImporter.Load(csvPath, msg =>
+{
+    skippedCount++;
+    Console.WriteLine($"  пропущено {msg}");
+});
+
+Console.WriteLine($"Прийнято: {imported.Items.Count}, пропущено: {skippedCount}");
 
 static void TryDo(string title, Action action)
 {
